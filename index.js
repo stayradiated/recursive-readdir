@@ -1,45 +1,64 @@
 var fs = require('fs')
 
-// how to know when you are done?
-function readdir(path, callback) {
-  var list = []
+function readdir(path, options, callback) {
+  var list = [];
+
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+
+  var dirTest = options.filterDir;
+  var fileTest = options.filterFile;
 
   fs.readdir(path, function (err, files) {
-    if (err) {
-      return callback(err)
-    }
+    if (err) return callback(err);
 
-    var pending = files.length
-    if (!pending) {
-      // we are done, woop woop
-      return callback(null, list)
-    }
+    // Check if we have any files
+    var pending = files.length;
+    if (! pending) return callback(null, list);
 
     files.forEach(function (file) {
-      fs.stat(path + '/' + file, function (err, stats) {
-        if (err) {
-          return callback(err)
+      var filepath = path + '/' + file;
+
+      fs.stat(filepath, function (err, stats) {
+        if (err) return callback(err);
+
+        // Add extra info to stats
+        stats.name   = file;
+        stats.path   = filepath;
+        stats.folder = path;
+
+        // IS DIRECTORY
+        if (stats.isDirectory()) {
+
+          if (dirTest && ! dirTest(stats)) {
+            pending -= 1;
+            if (! pending) callback(null, list);
+            return;
+          } 
+
+          files = readdir(filepath, options, function (err, res) {
+            list = list.concat(res);
+            pending -= 1;
+            if (! pending) callback(null, list);
+          });
+
         }
 
-        if (stats.isDirectory()) {
-          files = readdir(path + '/' + file, function (err, res) {
-            list = list.concat(res)
-            pending -= 1
-            if (!pending) {
-              callback(null, list)
-            }
-          })
-        }
+        // IS FILE
         else {
-          list.push(path + '/' + file)
-          pending -= 1
-          if (!pending) {
-            callback(null, list)
+
+          if (! fileTest || fileTest(stats)) {
+            list.push(filepath);
           }
+
+          pending -= 1
+          if (! pending) callback(null, list);
         }
-      })
-    })
-  })
+      });
+    });
+  });
 }
 
-module.exports = readdir
+module.exports = readdir;

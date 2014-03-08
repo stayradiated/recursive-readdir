@@ -1,16 +1,19 @@
 {
-  "author": "Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)",
-  "name": "recursive-readdir",
-  "description": "Get an array of all files in a directory and subdirectories.",
+  "name": "recursive-readdir-filter",
+  "description": "Get an array of all files in a directory and subdirectories. Supports filters.",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "contributors": [
+    "George Czabania <george@czabania.com>",
+    "Jamison Dance <jergason@gmail.com> (http://jamisondance.com/)"
+  ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jergason/recursive-readdir.git"
+    "url": "git://github.com/stayradiated/recursive-readdir.git"
   },
   "main": "./index.js",
   "scripts": {
-    "test": "mocha test/"
+    "test": "mocha -R spec --bail test/"
   },
   "keywords": [
     "directory",
@@ -19,8 +22,7 @@
   "engines": {
     "node": ">=0.6.6"
   },
-  "dependencies": {},
   "devDependencies": {
-    "mocha": "~1.14.0"
+    "mocha": "1.17.x"
   }
 }
