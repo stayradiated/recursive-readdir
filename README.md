@@ -1,4 +1,4 @@
-#recursive-readdir
+#recursive-readdir-filter
 
 This is a fork of https://github.com/jergason/recursive-readdir.
 
